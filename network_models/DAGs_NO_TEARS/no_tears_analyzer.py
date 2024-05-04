@@ -17,6 +17,7 @@ class NOTEARS_Analyzer():
     def __init__(self):
         self.deconv_res = None
         self.sm_l = None
+        self.dag = None
 
     def set_data(self,deconv_res:pd.DataFrame):
         """ Set deconvolution result as input dataframe
@@ -66,6 +67,24 @@ class NOTEARS_Analyzer():
         ax.grid(color="#ababab",linewidth=0.5)
         plt.title("Edge Weight Distribution")
         plt.show()
+
+        # construct rag graph
+        node_names = self.input_data.columns.tolist()
+        raw_dag = nx.DiGraph()
+        new_idx = []
+        pn_labels = []
+        source_labels = []
+        target_labels = []
+        for (u,v,d) in self.sm.edges(data=True):
+            new_u = node_names.index(u)
+            new_v = node_names.index(v)
+            raw_dag.add_edge(new_u, new_v, weight=abs(d['weight']))
+            new_idx.append('{} (interacts with) {}'.format(new_u,new_v))
+            source_labels.append(new_u)
+            target_labels.append(new_v)
+        
+        self.raw_dag = raw_dag
+
     
     def create_dags(self,weight_threshold=0.3,do_plot=True):
         # Trimming
@@ -144,3 +163,4 @@ class NOTEARS_Analyzer():
         print("Node Size: {}".format(len(dag.nodes())))
         print("Edge Size: {}".format(len(dag.edges())))
 
+        self.dag = dag
