@@ -49,6 +49,7 @@ __all__ = ["from_numpy", "from_pandas"]
 def from_numpy(
     X: np.ndarray,
     W: np.ndarray,
+    binary_mask: bool = True,
     dist_type_schema: Dict[int, str] = None,
     ls_gamma: float = 0.5,
     lasso_beta: float = 0.0,
@@ -187,7 +188,7 @@ def from_numpy(
         use_gpu=use_gpu,
         **kwargs,
     )
-    model.fit(X, W, max_iter=max_iter)
+    model.fit(X, W, max_iter=max_iter, w_binary_mask=binary_mask)
     sm = StructureModel(model.adj)
 
     if w_threshold:
@@ -234,6 +235,7 @@ def from_numpy(
 def from_pandas(
     X: pd.DataFrame,
     W: pd.DataFrame,
+    binary_mask: bool = True,
     dist_type_schema: Dict[Union[str, int], str] = None,
     ls_gamma: float = 0.5,
     lasso_beta: float = 0.0,
@@ -338,6 +340,7 @@ def from_pandas(
     g = from_numpy(
         X=data.values,
         W=w_data.values,
+        binary_mask = binary_mask,
         dist_type_schema=dist_type_schema,
         ls_gamma=ls_gamma,
         lasso_beta=lasso_beta,
