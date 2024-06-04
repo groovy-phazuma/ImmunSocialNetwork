@@ -446,7 +446,7 @@ def create_dag(sm,node_names:list,save_dir=None,weight_threshold=0.0,edge_limit=
     pn_labels = []
     source_labels = []
     target_labels = []
-    sorted_edge_list = sorted(sm_l.edges(data=True),key=lambda x : x[-1]['mean_effect'],reverse=True)  # sort by weight
+    sorted_edge_list = sorted(sm_l.edges(data=True),key=lambda x : abs(x[-1]['mean_effect']),reverse=True)  # sort by weight
     for (u,v,d) in sorted_edge_list:
         if abs(d['mean_effect']) < weight_threshold:
             continue
@@ -465,7 +465,7 @@ def create_dag(sm,node_names:list,save_dir=None,weight_threshold=0.0,edge_limit=
         source_labels.append(new_u)
         target_labels.append(new_v)
 
-        if len(new_idx) == edge_limit:
+        if len(new_idx) == int(edge_limit):
             print("Reached the upper size.")
             break
 
