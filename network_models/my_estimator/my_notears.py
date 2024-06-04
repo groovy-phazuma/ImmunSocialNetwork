@@ -458,9 +458,9 @@ def create_dag(sm,node_names:list,save_dir=None,weight_threshold=0.0,edge_limit=
         new_u = node_names.index(u)
         new_v = node_names.index(v)
         if do_abs:
-            dag.add_edge(new_u, new_v, weight=abs(d['mean_effect']))  # d['weight']
+            dag.add_edge(new_u, new_v, weight=abs(d['mean_effect'].astype(float)))  # d['weight']
         else:
-            dag.add_edge(new_u, new_v, weight=d['mean_effect'])
+            dag.add_edge(new_u, new_v, weight=d['mean_effect'].astype(float))
         new_idx.append('{} (interacts with) {}'.format(new_u,new_v))
         source_labels.append(new_u)
         target_labels.append(new_v)
