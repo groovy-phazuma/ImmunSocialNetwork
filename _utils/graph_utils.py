@@ -154,5 +154,6 @@ def create_dag(sm,node_names:list,save_dir=None,weight_threshold=0.0,edge_limit=
     edge_colors = [dag.edges[edge]['color'] for edge in dag.edges()]
 
     nx.draw(dag, edge_color=edge_colors, labels=labels,width=graph_edge_widths, arrows=True, with_labels=True)
+    plt.show()
 
     return dag
