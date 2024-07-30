@@ -156,3 +156,11 @@ def create_dag(sm,node_names:list,save_dir=None,weight_threshold=0.0,edge_limit=
     nx.draw(dag, edge_color=edge_colors, labels=labels,width=graph_edge_widths, arrows=True, with_labels=True)
 
     return dag
+
+def get_first_neighbors(graph, node):
+    neighbors = set()
+    # collect target
+    neighbors.update(graph.successors(node))
+    # collect source
+    neighbors.update(graph.predecessors(node))
+    return neighbors
