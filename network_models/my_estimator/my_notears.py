@@ -52,6 +52,7 @@ def from_numpy(
     X: np.ndarray,
     W: np.ndarray,
     binary_mask: bool = True,
+    reflect_mean_effect: bool = True,
     dist_type_schema: Dict[int, str] = None,
     ls_gamma: float = 0.5,
     lasso_beta: float = 0.0,
@@ -188,6 +189,7 @@ def from_numpy(
         bounds=bnds,
         use_bias=use_bias,
         use_gpu=use_gpu,
+        reflect_mean_effect=reflect_mean_effect,
         **kwargs,
     )
     model.fit(X, W, max_iter=max_iter, w_binary_mask=binary_mask)
@@ -198,13 +200,18 @@ def from_numpy(
 
     # extract the mean effect and add as edge attribute
     mean_effect = model.adj_mean_effect
+    if reflect_mean_effect:
+        mean_effect = deepcopy(model.adj_mean_effect)
+    else:
+        mean_effect = deepcopy(model.adj)
+
     for u, v, edge_dict in sm.edges.data(True):
         sm.add_edge(
             u,
             v,
             origin="learned",
             weight=edge_dict["weight"],
-            mean_effect=mean_effect[u, v],
+            mean_effect=mean_effect[u, v],  # NOTE: mean_effect[u, v]
         )
 
     # set bias as node attribute
@@ -238,6 +245,7 @@ def from_pandas(
     X: pd.DataFrame,
     W: pd.DataFrame = None,
     binary_mask: bool = True,
+    reflect_mean_effect: bool = True,
     dist_type_schema: Dict[Union[str, int], str] = None,
     ls_gamma: float = 0.5,
     lasso_beta: float = 0.0,
@@ -377,7 +385,8 @@ def from_pandas(
     g = from_numpy(
         X=data.values,
         W=w_data.values,
-        binary_mask = binary_mask,
+        binary_mask=binary_mask,
+        reflect_mean_effect=reflect_mean_effect,
         dist_type_schema=dist_type_schema,
         ls_gamma=ls_gamma,
         lasso_beta=lasso_beta,
