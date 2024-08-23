@@ -314,9 +314,41 @@ def from_pandas(
 
     data = deepcopy(X)
     if W is None:
-        W = pd.DataFrame(np.zeros((X.shape[1],X.shape[1])))
+        W = pd.DataFrame(np.zeros((data.shape[1],data.shape[1])),index=data.columns,columns=data.columns)
         print("Analysis without W reference")
     w_data = deepcopy(W)
+
+    assert w_data.shape[0] == w_data.shape[1], "Set symmetric matrix as a reference."
+
+    if data.shape[1]==w_data.shape[0]:
+        pass
+    else:
+        print("Processing W reference to make it to the same as X.")
+        do_abs=False
+
+        # process W reference to make it to the same shape as X.
+        W_pro = pd.DataFrame(np.zeros((data.shape[1],data.shape[1])),index=data.columns,columns=data.columns)
+        for c1 in w_data.columns:
+            for c2 in w_data.index:
+                if c1 == c2:  # Ignore diagonal components
+                    pass
+                else:
+                    try:
+                        if do_abs:
+                            W_pro[c1].loc[c2] = abs(w_data[c1].loc[c2])
+                        else:
+                            W_pro[c1].loc[c2] = w_data[c1].loc[c2]
+                    except:
+                        # included in W but not included in X.
+                        pass
+        
+        vmax = W_pro.max().max()
+        vmin = W_pro.min().min()
+        fxn = lambda x : (x-vmin)/(vmax-vmin)
+        mm_W = W_pro.applymap(fxn)
+
+        w_data = mm_W  # update
+    assert all(w_data.columns == data.columns), "Cell type order does't match."
 
     # if dist_type_schema is not None, convert dist_type_schema from cols to idx
     dist_type_schema = (
