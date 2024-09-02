@@ -220,12 +220,6 @@ def customized_scatter_plot(y_true, y_score, xlabel, ylabel, title, weight_thres
     - weight_threshold: Threshold for distinguishing colors
     - do_plot: Boolean flag to show plot
     """
-    total_cor, pvalue = stats.pearsonr(y_score,y_true)
-    rmse = np.sqrt(mean_squared_error(y_score, y_true))
-    if pvalue < 0.01:
-        pvalue = '{:.2e}'.format(pvalue)
-    else:
-        pvalue = round(pvalue,3)
 
     y_true_posi = []
     y_score_posi = []
@@ -239,6 +233,14 @@ def customized_scatter_plot(y_true, y_score, xlabel, ylabel, title, weight_thres
             y_true_posi.append(y_true[i])
         else:
             c.append('tab:blue')
+
+    total_cor, pvalue = stats.pearsonr(y_score_posi,y_true_posi)
+    rmse = np.sqrt(mean_squared_error(y_score_posi, y_true_posi))
+    if pvalue < 0.01:
+        pvalue = '{:.2e}'.format(pvalue)
+    else:
+        pvalue = round(pvalue,3)
+    print("test: ",total_cor)
 
     # Set the style and color palette
     sns.set(style="whitegrid", context="talk")
